@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile-dev
+    container_name: berkshire-1
+    volumes:
+      - .:/usr/src/app
+    working_dir: /usr/src/app
+    environment:
+      - STDIN_OPEN=${STDIN_OPEN}
+    expose:
+      - "8081"
+    ports:
+      - "8081:8081"
+    command: tail -f /dev/null

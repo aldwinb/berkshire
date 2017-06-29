@@ -1,0 +1,14 @@
+FROM python:alpine3.6
+
+RUN apk update \
+  && apk add bash \
+    bash-completion
+
+COPY requirements.txt /tmp/requirements.txt
+
+RUN pip3 install --upgrade -r /tmp/requirements.txt \
+  && pip3 install --upgrade nose \
+    parameterized \
+    mock \
+    tox \
+  && rm -rf /tmp/requirements.txt
