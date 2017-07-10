@@ -8,6 +8,9 @@ services:
     container_name: berkshire-1
     volumes:
       - .:/usr/src/app
+    links:
+      - postgresql
+      - couchdb
     working_dir: /usr/src/app
     environment:
       - STDIN_OPEN=${STDIN_OPEN}
@@ -16,3 +19,24 @@ services:
     ports:
       - "8081:8081"
     command: tail -f /dev/null
+
+  postgresql:
+    image: postgres:alpine
+    environment:
+      POSTGRES_PASSWORD: berkshire
+    volumes:
+      - berkshire-postgresql-vol-1:/var/lib/postgresql/data
+
+  couchdb:
+    image: klaemo/couchdb:latest
+    environment:
+      COUCHDB_USER: admin
+      COUCHDB_PASSWORD: berkshire
+    ports:
+      - "5984:5984"
+    volumes:
+      - berkshire-couchdb-vol-1:/opt/couchdb/data
+
+volumes:
+  berkshire-postgresql-vol-1:
+  berkshire-couchdb-vol-1:

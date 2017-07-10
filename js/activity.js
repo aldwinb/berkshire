@@ -6,9 +6,41 @@
     this.lodging = lodging;
   });
 
+  app.controller('OptionController', function() {
+    this.inputGroups = inputGroups;
+    this.hello = [1, 2, 3, 4, 5];
+  });
+
+  var inputGroups = [
+    {
+      'inputId': 'shortDesc',
+      'label': 'Short description'
+    },
+    {
+      'inputId': 'airbnbLink',
+      'label': 'AirBnb link'
+    },
+    {
+      'inputId': 'travelTime',
+      'label': 'Travel time to Sugarbush'
+    },
+    {
+      'inputId': 'totalCost',
+      'label': 'Total cost of stay'
+    },
+    {
+      'inputId': 'numOfBedrooms',
+      'label': '# of bedrooms'
+    },
+    {
+      'inputId': 'notes',
+      'label': 'Notes'
+    }
+  ];
+
   var lodging = {
     'headers': [
-      'Link to AirBnb',
+      'AirBnb link',
       'Travel time to Sugarbush',
       'Cost per person',
       'Number of bedrooms',
