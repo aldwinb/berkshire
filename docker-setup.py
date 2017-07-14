@@ -1,9 +1,8 @@
 import couchdb
 import os
-import sys
+
 
 def setup_dbs():
-    args = sys.argv[1:]
     host = os.environ['COUCHDB_HOST']
     activity_db_name = os.environ['APP_ACTIVITY_DATABASE']
     server = couchdb.Server(host, )

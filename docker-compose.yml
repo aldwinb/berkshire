@@ -16,7 +16,7 @@ services:
     environment:
       - STDIN_OPEN=${STDIN_OPEN}
       - COUCHDB_HOST=http://admin:berkshire@couchdb:5984
-      - APP_ACTIVITY_DATABASE=activity
+      - COUCHDB_ACTIVITY_DB=activity
     expose:
       - "8081"
     ports:
