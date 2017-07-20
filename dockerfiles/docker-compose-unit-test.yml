@@ -2,8 +2,7 @@ version: '3'
 
 services:
   app:
-    build:
-      context: .
+    image: ${DOCKER_BERKSHIRE_DEV_IMAGE}
     container_name: berkshire-1
     volumes:
       - .:/usr/src/app
