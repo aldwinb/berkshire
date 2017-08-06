@@ -4,6 +4,7 @@ from mock import Mock
 from nose_parameterized import parameterized
 from tornado.testing import AsyncHTTPTestCase
 
+import http
 import simplejson as json
 
 
@@ -29,7 +30,7 @@ class TestActivityEndpoint(AsyncHTTPTestCase):
         response = self.fetch('/activity/123')
 
         # then
-        assert response.code == 200
+        assert response.code == http.HTTPStatus.OK
         assert 'application/json' in response.headers['Content-Type']
         assert response.body == json.dumps(self.__get_response).encode('utf-8')
         self.__db.get.assert_called_with(id='123')
@@ -41,7 +42,7 @@ class TestActivityEndpoint(AsyncHTTPTestCase):
         response = self.fetch('/activity')
 
         # then
-        assert response.code == 404
+        assert response.code == http.HTTPStatus.NOT_FOUND
 
     def test_should_put_activity(self):
         # given
@@ -53,9 +54,7 @@ class TestActivityEndpoint(AsyncHTTPTestCase):
         response = self.fetch('/activity/123', method='PUT', body=request_body)
 
         # then
-        assert response.code == 201
-        assert 'application/json' in response.headers['Content-Type']
-        assert json.loads(response.body)['status'] == 'Success'
+        assert response.code == http.HTTPStatus.CREATED
         self.__db.upsert.assert_called_with(id='123', obj=request_body_json)
 
     def test_should_delete_activity(self):
@@ -67,7 +66,7 @@ class TestActivityEndpoint(AsyncHTTPTestCase):
 
         # then
         print('Response body: {}'.format(response.body))
-        assert response.code == 204
+        assert response.code == http.HTTPStatus.NO_CONTENT
         assert len(response.body) == 0
         self.__db.delete.assert_called_with(id='123')
 
@@ -85,4 +84,4 @@ class TestActivityEndpoint(AsyncHTTPTestCase):
 
         # then
         print('Response code: {}'.format(response.code))
-        assert response.code == 405
+        assert response.code == http.HTTPStatus.METHOD_NOT_ALLOWED

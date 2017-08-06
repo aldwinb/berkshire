@@ -16,4 +16,4 @@ before_install:
   - export
 
 script:
-  - docker-compose run app
+  - docker-compose run app tox

@@ -2,6 +2,5 @@
 .travis.yml
 .gitignore
 base-version.txt
-dockerfiles/*
 LICENSE
 README.md

@@ -4,29 +4,34 @@ from tornado import autoreload
 from tornado.ioloop import IOLoop
 from tornado.web import (Application, RequestHandler, StaticFileHandler)
 
-import inspect
+import http
 import os
 import simplejson as json
 import shutil
 
+DATETIME_FORMAT = '%Y-%m-%dT%X'
+
 
 class BaseRequestHandler(RequestHandler):
+    """Serves as the base class of all the request handlers used in this
+    application.
 
-    def get_error_response(self, message):
+    It contains the common methods that are shared by the
+    deriving request handler classes.
+    """
+    def __get_error_response(self, message):
         return {
-            'status': 'Error',
-            'message': message,
-            'datetime': datetime.now().strftime('%Y-%m-%dT%X')
+            'err': message,
+            'datetime': datetime.now().strftime(DATETIME_FORMAT)
         }
 
-    def get_201_response(self):
-        return {
-            'status': 'Success',
-            'datetime': datetime.now().strftime('%Y-%m-%dT%X')
-        }
+    def options(self, o):
+        self.set_status(http.HTTPStatus.NO_CONTENT)
+        self.finish()
 
 
 class ActivitiesHandler(BaseRequestHandler):
+    """Serves as the request handler for /activities endpoint."""
     def initialize(self, db):
         self.__db = db
 
@@ -36,10 +41,6 @@ class ActivitiesHandler(BaseRequestHandler):
         self.set_header("Access-Control-Allow-Headers", allowed_headers)
         self.set_header('Access-Control-Allow-Methods',  'GET, POST, OPTIONS')
 
-    def options(self, o):
-        self.set_status(204)
-        self.finish()
-
     def get(self):
         pass
 
@@ -47,16 +48,16 @@ class ActivitiesHandler(BaseRequestHandler):
         payload = json.loads(self.request.body.decode('utf-8'))
         activity_id = payload.get('activity_id')
         if not activity_id:
-            self.set_status(500)
+            self.set_status(http.HTTPStatus.INTERNAL_SERVER_ERROR)
             self.write({'error': 'Missing activity ID'})
 
         self.__db.upsert(id=payload['activity_id'], obj=payload)
-        self.set_status(200)
+        self.set_status(http.HTTPStatus.CREATED)
         self.write({'message': 'Success'})
 
 
 class ActivityHandler(BaseRequestHandler):
-
+    """Serves as the request handler for /activity endpoint."""
     def initialize(self, db):
         self.__db = db
 
@@ -67,24 +68,20 @@ class ActivityHandler(BaseRequestHandler):
         self.set_header('Access-Control-Allow-Methods',  'GET, PUT, '
                                                          'DELETE, OPTIONS')
 
-    def options(self, o):
-        self.set_status(204)
-        self.finish()
-
     def put(self, activity_id):
         payload = json.loads(self.request.body.decode('utf-8'))
         self.__db.upsert(id=activity_id, obj=payload)
-        self.set_status(201)
-        self.write(self.get_201_response())
+        self.set_status(http.HTTPStatus.CREATED)
+        self.finish()
 
     def get(self, activity_id):
         activity = self.__db.get(id=activity_id)
-        self.set_status(200)
+        self.set_status(http.HTTPStatus.OK)
         self.write(activity)
 
     def delete(self, activity_id):
         self.__db.delete(id=activity_id)
-        self.set_status(204)
+        self.set_status(http.HTTPStatus.NO_CONTENT)
         self.finish()
 
 
@@ -95,17 +92,20 @@ class PingHandler(BaseRequestHandler):
         self.set_header("Access-Control-Allow-Headers", allowed_headers)
         self.set_header('Access-Control-Allow-Methods',  'GET, OPTIONS')
 
-    def options(self, o):
-        self.set_status(204)
-        self.finish()
-
     def get(self):
-        self.set_status(200)
-        self.write('Hello')
+        self.set_status(http.HTTPStatus.OK)
+        self.write({'datetime': datetime.now().strftime(DATETIME_FORMAT)})
 
 
 def make_app(db):
+    """Creates the Tornado application.
 
+    Args:
+        db: The database context used by the application.
+
+    Returns:
+        An instance of the tornado.web.Application.
+    """
     return Application([
         (r'/ping', PingHandler),
         (r'/activity/(\w+)', ActivityHandler, dict(db=db)),
@@ -119,14 +119,34 @@ def make_app(db):
     ], )
 
 
-def main():
+def watch_files(paths):
+    """Adds files to the list that triggers auto reload of the application.
 
-    pre_path = os.path.dirname(os.path.abspath(
-        inspect.getfile(inspect.currentframe())))
-    yaml_template = Path(pre_path) / 'static/openapi.template.yaml'
-    yaml = Path(pre_path) / 'static/openapi.yaml'
+    Args:
+        paths: The list of directories that contain the files that should be
+        added to the trigger list.
+    """
+    autoreload.start()
+    for w in paths:
+        for dir, _, files in os.walk(w):
+            [autoreload.watch(dir + '/' + f) for f in files if
+             not f.startswith('.')]
+
+
+def create_openapi_spec():
+    """Creates the OpenAPI specification document of the application."""
+    dirname = os.path.dirname(__file__)
+    yaml_template = Path(dirname) / 'static/openapi.template.yml'
+    yaml = Path(dirname) / 'static/openapi.yml'
     shutil.copyfile(yaml_template, yaml)
 
+
+def main():
+
+    # Create OpenAPI spec document
+    create_openapi_spec()
+
+    # Initialize CouchDB
     couchdb_host = os.environ['COUCHDB_HOST']
     activity_db_name = os.environ['COUCHDB_ACTIVITY_DB']
     db_kwargs = {
@@ -139,11 +159,9 @@ def main():
     app.listen(port)
     print('Starting app on 0.0.0.0:{}'.format(port))
 
-    autoreload.start()
-    for w in ['berkshire/static']:
-        for dir, _, files in os.walk(w):
-            [autoreload.watch(dir + '/' + f) for f in files if
-             not f.startswith('.')]
+    # Add some files to the 'auto reload watch list' during development
+    if os.environ['APP_ENV'] == 'local':
+        watch_files(paths=['berkshire/static'])
 
     IOLoop.current().start()
 

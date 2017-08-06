@@ -12,6 +12,8 @@ done
 >&2 echo "CouchDB is up - executing command"
 
 python docker-setup.py
+
+APP_ENV=${APP_ENV:-local}
 if [ -n "$STDIN_OPEN" ]; then
   tail -f /dev/null
 else
