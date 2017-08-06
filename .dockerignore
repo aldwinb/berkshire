@@ -1,6 +1,7 @@
 # Created by .ignore support plugin (hsz.mobi)
-LICENSE
-README.md
 .travis.yml
 .gitignore
+base-version.txt
 dockerfiles/*
+LICENSE
+README.md

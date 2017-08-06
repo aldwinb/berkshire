@@ -15,5 +15,5 @@ python docker-setup.py
 if [ -n "$STDIN_OPEN" ]; then
   tail -f /dev/null
 else
-  python app.py
+  python berkshire/app.py
 fi

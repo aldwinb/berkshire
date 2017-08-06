@@ -98,3 +98,6 @@ venv/
 
 # IntelliJ
 .idea
+
+# Other
+**/openapi.yaml

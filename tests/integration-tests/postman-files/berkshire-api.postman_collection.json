@@ -1,0 +1,81 @@
+{
+	"variables": [],
+	"info": {
+		"name": "Berkshire API",
+		"_postman_id": "33ea7f09-b9ce-6a2d-ded5-fb991a4e64be",
+		"description": "This API is a group planning platform. One of its features is the ability\n for groups to decide via voting.\n",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Activities",
+			"description": "Folder for groups",
+			"item": [
+				{
+					"name": "Get an activity (200)",
+					"request": {
+						"url": "http://{{host}}/group/{{groupId}}/activity/{{activityId}}",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Create or update an activity\n",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "http://{{host}}/group/{{groupId}}/activity/{{activityId}}",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{putPayload}}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Delete an activity\n",
+					"request": {
+						"url": "http://{{host}}/group/{{groupId}}/activity/{{activityId}}",
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Activities: Error",
+			"description": "",
+			"item": []
+		}
+	]
+}
