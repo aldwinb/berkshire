@@ -8,12 +8,14 @@ info:
   version: 0.0.1
 schemes:
   - http
+
 tags:
 - name: "Activities"
   x-displayName: "Activities"
-  description: |
-    Create and manage group activities
-
+  description: Create and manage group activities
+- name: "Groups"
+  x-displayName: "Groups"
+  description: Manage groups
 
 parameters:
   groupId:
@@ -32,6 +34,18 @@ parameters:
       The unique identifier of an `activity`
 
 definitions:
+
+  Group:
+    type: object
+    required:
+      - name
+    properties:
+      name:
+        type: string
+        description: |
+          The name of the `group`
+        example:
+          dabarkads
 
   Activity:
     type: object
@@ -122,6 +136,66 @@ definitions:
           The type of data point
 
 paths:
+
+  /group/{groupId}:
+    parameters:
+      - $ref: '#/parameters/groupId'
+
+    get:
+      tags:
+      - Groups
+      summary: Get a group
+      operationId: getGroup
+      produces:
+      - application/json
+      responses:
+        200:
+          schema:
+            $ref: '#/definitions/Group'
+          description: |
+            Successful request
+        404:
+          description: |
+            `group` not found
+        500:
+          description: |
+            Internal server error
+
+    put:
+      tags:
+      - Groups
+      summary: |
+        Create or update a group
+      operationId: "putGroup"
+      consumes:
+      - application/json
+      parameters:
+        - name: 'group'
+          in: body
+          description: |
+            The group that will be created or updated
+          required: true
+          schema:
+            $ref: '#/definitions/Group'
+      responses:
+        201:
+          description: Created
+        204:
+          description: Updated
+        500:
+          description: Internal server error
+
+    delete:
+      tags:
+      - Groups
+      summary: Delete a group
+      operationId: "deleteGroup"
+      responses:
+        204:
+          description: Deleted or nothing was done
+        500:
+          description: Internal server error
+
   /group/{groupId}/activity/{activityId}:
     parameters:
       - $ref: '#/parameters/groupId'
@@ -140,14 +214,14 @@ paths:
           schema:
             $ref: '#/definitions/Activity'
           description: |
-            Successful request.
+            Successful request
           example:
         404:
           description: |
-            `activity` not found.
+            `activity` not found
         500:
           description: |
-            Internal server error.
+            Internal server error
 
     put:
       tags:
@@ -172,6 +246,7 @@ paths:
         500:
           description: |
             Internal server error.
+
 
     delete:
       tags:

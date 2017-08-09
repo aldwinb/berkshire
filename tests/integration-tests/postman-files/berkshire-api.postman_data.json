@@ -4,6 +4,13 @@
       "name": "Holly's birthday 2018",
       "startDateTime": "2017-08-02T02:17:43Z",
       "endDateTime": "2017-08-02T02:17:43Z"
+    },
+    "groups": {
+      "put": {
+        "payload": {
+          "name": "my-kind-of-group"
+        }
+      }
     }
   }
 ]
