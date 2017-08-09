@@ -1,4 +1,4 @@
-#!/usr/local/bin/bash
+#!/usr/bin/env bash
 
 set -e
 
@@ -13,7 +13,6 @@ done
 
 python docker-setup.py
 
-APP_ENV=${APP_ENV:-local}
 if [ -n "$STDIN_OPEN" ]; then
   tail -f /dev/null
 else
