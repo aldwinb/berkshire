@@ -1,0 +1,45 @@
+version: '3'
+
+services:
+  app:
+    image: ${DOCKER_BERKSHIRE_DEV_IMAGE}
+    container_name: berkshire-1
+    volumes:
+      - .:/usr/src/app
+    depends_on:
+      - couchdb
+    links:
+      - postgresql
+      - couchdb
+    working_dir: /usr/src/app
+    environment:
+      - STDIN_OPEN=${STDIN_OPEN}
+      - COUCHDB_HOST=http://admin:berkshire@couchdb:5984
+      - COUCHDB_ACTIVITY_DB=activity
+      - APP_ENV=${APP_ENV}
+    expose:
+      - "8081"
+    ports:
+      - "8081:8081"
+    command: ["bash", "docker-command.sh"]
+
+  postgresql:
+    image: postgres:alpine
+    environment:
+      POSTGRES_PASSWORD: berkshire
+    volumes:
+      - berkshire-postgresql-vol-1:/var/lib/postgresql/data
+
+  couchdb:
+    image: klaemo/couchdb:latest
+    environment:
+      COUCHDB_USER: admin
+      COUCHDB_PASSWORD: berkshire
+    ports:
+      - "5984:5984"
+    volumes:
+      - berkshire-couchdb-vol-1:/opt/couchdb/data
+
+volumes:
+  berkshire-postgresql-vol-1:
+  berkshire-couchdb-vol-1:

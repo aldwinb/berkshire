@@ -1,0 +1,19 @@
+sudo: required
+
+language: python
+
+services:
+  - docker
+
+before_install:
+  - export DOCKER_BASE_VERSION=$(cat base-version.txt)
+  - export DOCKER_BERKSHIRE_DEV_IMAGE=aldwinb/berkshire-dev:${DOCKER_BASE_VERSION}
+  - if ! docker pull ${DOCKER_BERKSHIRE_DEV_IMAGE}; then
+    docker build --rm -t ${DOCKER_BERKSHIRE_DEV_IMAGE} .;
+    docker login -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}";
+    docker push ${DOCKER_BERKSHIRE_DEV_IMAGE};
+    fi
+  - export
+
+script:
+  - docker-compose run app tox
