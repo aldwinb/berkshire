@@ -2,8 +2,6 @@
 
 set -e
 
-host="{$1}"
-
 until wget --spider http://couchdb:5984/_utils &> /dev/null; do
   >&2 echo "CouchDB is unavailable - sleeping"
   sleep 1
@@ -13,7 +11,7 @@ done
 
 python docker-setup.py
 
-if [ -n "$STDIN_OPEN" ]; then
+if [ "${DETACHED}" -eq "1" ]; then
   tail -f /dev/null
 else
   python berkshire/app.py

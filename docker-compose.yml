@@ -2,14 +2,12 @@ version: '3'
 
 services:
   app:
-    image: ${DOCKER_BERKSHIRE_DEV_IMAGE}
+    build:
+      context: .
     container_name: berkshire-1
     volumes:
       - .:/usr/src/app
     depends_on:
-      - couchdb
-    links:
-      - postgresql
       - couchdb
     working_dir: /usr/src/app
     environment:
@@ -17,11 +15,12 @@ services:
       - COUCHDB_HOST=http://admin:berkshire@couchdb:5984
       - COUCHDB_ACTIVITY_DB=activity
       - APP_ENV=${APP_ENV:-local}
+      - DETACHED=${DETACHED:-0}
     expose:
       - "8081"
     ports:
       - "8081:8081"
-    command: ["bash", "docker-command.sh"]
+    command: ["bash", "bin/docker-command.bash"]
 
   postgresql:
     image: postgres:alpine

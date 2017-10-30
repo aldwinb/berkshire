@@ -1,9 +1,36 @@
 [
   {
-    "putPayload": {
-      "name": "Holly's birthday 2018",
-      "startDateTime": "2017-08-02T02:17:43Z",
-      "endDateTime": "2017-08-02T02:17:43Z"
+    "activity": {
+      "get": {
+        "groupId": "12345",
+        "activityId": "12345"
+      },
+      "put": {
+        "groupId": "12345",
+        "activityId": "12345",
+        "payload" : {
+          "name": "Holly's birthday 2018",
+          "startDateTime": "2017-08-02T02:17:43Z",
+          "endDateTime": "2017-08-02T02:17:43Z"
+        }
+      },
+      "delete": {
+        "groupId": "12345",
+        "activityId": "12345"
+      }
+    },
+    "activities": {
+      "get": {
+        "groupId": "12345"
+      },
+      "post": {
+        "groupId": "12345",
+        "payload" : {
+          "name": "Holly's birthday 2018",
+          "startDateTime": "2017-08-02T02:17:43Z",
+          "endDateTime": "2017-08-02T02:17:43Z"
+        }
+      }
     },
     "groups": {
       "put": {

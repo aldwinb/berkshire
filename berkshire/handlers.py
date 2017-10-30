@@ -4,6 +4,12 @@ import simplejson as json
 from datetime import datetime
 from tornado.web import RequestHandler
 
+try:
+    from .validators import is_payload_valid
+except ImportError:
+    from validators import is_payload_valid
+
+
 DATETIME_FORMAT = '%Y-%m-%dT%X'
 
 
@@ -68,23 +74,25 @@ class ActivitiesHandler(BaseRequestHandler):
         cors['methods'] = 'GET, POST, OPTIONS'
         return cors
 
-    def get(self):
-        pass
+    def get(self, group_id):
+        """Gets the list """
+        self.set_status(http.HTTPStatus.OK)
+        self.finish()
 
-    def post(self):
+    def post(self, group_id):
         """Handles the POST method of the /activities endpoint.
 
         Creates a new activity object."""
-        payload = json.loads(self.request.body.decode('utf-8'))
-        activity_id = payload.get('activity_id')
-        if not activity_id:
-            self.set_status(http.HTTPStatus.INTERNAL_SERVER_ERROR)
-            self.write({'error': 'Missing activity ID'})
-
-        self.__db.upsert(id=payload['activity_id'], obj=payload)
+        # payload = json.loads(self.request.body.decode('utf-8'))
+        # activity_id = payload.get('activity_id')
+        # if not activity_id:
+        #     self.set_status(http.HTTPStatus.INTERNAL_SERVER_ERROR)
+        #     self.write({'error': 'Missing activity ID'})
+        #
+        # self.__db.upsert(id=payload['activity_id'], obj=payload)
         self.set_status(http.HTTPStatus.CREATED)
-        self.write({'message': 'Success'})
-
+        # self.write({'message': 'Success'})
+        self.finish()
 
 class ActivityHandler(BaseRequestHandler):
     """Serves as the request handler for /activity endpoint."""
@@ -96,7 +104,7 @@ class ActivityHandler(BaseRequestHandler):
         cors['methods'] = 'GET, PUT, DELETE, OPTIONS'
         return cors
 
-    def put(self, activity_id):
+    def put(self, group_id, activity_id):
         """Handles the PUT method of the /activity endpoint.
 
         Creates or updates an activity object.
@@ -104,12 +112,12 @@ class ActivityHandler(BaseRequestHandler):
         Args:
             activity_id: The unique identifier of the activity.
         """
-        payload = json.loads(self.request.body.decode('utf-8'))
-        self.__db.upsert(id=activity_id, obj=payload)
+        # payload = json.loads(self.request.body.decode('utf-8'))
+        # self.__db.upsert(id=activity_id, obj=payload)
         self.set_status(http.HTTPStatus.CREATED)
         self.finish()
 
-    def get(self, activity_id):
+    def get(self, group_id, activity_id):
         """Handles the GET method of the /activity endpoint.
 
         Gets an activity object.
@@ -117,15 +125,15 @@ class ActivityHandler(BaseRequestHandler):
         Args:
             activity_id: The unique identifier of the activity.
         """
-        activity = self.__db.get(id=activity_id)
-        if not activity:
-            self.set_status(http.HTTPStatus.NOT_FOUND)
-            self.finish()
-        else:
-            self.set_status(http.HTTPStatus.OK)
-            self.write(activity)
+        # activity = self.__db.get(id=activity_id)
+        # if not activity:
+        #     self.set_status(http.HTTPStatus.NOT_FOUND)
+        #     self.finish()
+        # else:
+        self.set_status(http.HTTPStatus.OK)
+        self.finish()
 
-    def delete(self, activity_id):
+    def delete(self, group_id, activity_id):
         """Handles the DELETE method of the /activity endpoint.
 
         Deletes an activity object.
@@ -133,7 +141,7 @@ class ActivityHandler(BaseRequestHandler):
         Args:
             activity_id: The unique identifier of the activity.
         """
-        self.__db.delete(id=activity_id)
+        # self.__db.delete(id=activity_id)
         self.set_status(http.HTTPStatus.NO_CONTENT)
         self.finish()
 
@@ -157,6 +165,13 @@ class GroupHandler(BaseRequestHandler):
             group_id: The unique identifier of the group.
         """
         payload = json.loads(self.request.body.decode('utf-8'))
+
+        is_valid = is_payload_valid(payload)
+
+        if not is_valid:
+            self.set_status(http.HTTPStatus.BAD_REQUEST)
+            self.finish()
+
         self.__db.upsert(id=group_id, obj=payload)
         self.set_status(http.HTTPStatus.CREATED)
         self.finish()
