@@ -1,16 +1,18 @@
 import os
 import shutil
+import logging
 
 from pathlib import Path
 from tornado import autoreload
 from tornado.ioloop import IOLoop
 from tornado.web import (Application, StaticFileHandler)
 
-
 try:
-    from .handlers import ActivityHandler, GroupHandler, PingHandler
+    from .handlers import (PingHandler, ActivityHandler, ActivitiesHandler,
+                           GroupHandler)
 except ModuleNotFoundError:
-    from handlers import ActivityHandler, GroupHandler, PingHandler
+    from handlers import (PingHandler, ActivityHandler, ActivitiesHandler,
+                          GroupHandler)
 
 
 def make_app(activity_db, group_db):
@@ -24,8 +26,10 @@ def make_app(activity_db, group_db):
     """
     return Application([
         (r'/ping', PingHandler),
+        (r'/group/(\w+)/activity/(\w+)', ActivityHandler,
+         dict(db=activity_db)),
+        (r'/group/(\w+)/activities', ActivitiesHandler, dict(db=activity_db)),
         (r'/group/(\w+)', GroupHandler, dict(db=group_db)),
-        (r'/activity/(\w+)', ActivityHandler, dict(db=activity_db)),
         (r'/js/(.*)', StaticFileHandler, {
             'path': 'js'
         }),
@@ -60,6 +64,11 @@ def create_openapi_spec():
 
 def main():
 
+    # Set logging
+    logging.basicConfig()
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.DEBUG)
+
     # Create OpenAPI spec document
     create_openapi_spec()
 
@@ -79,7 +88,7 @@ def main():
     app = make_app(activity_db=berkshiredb.DbContext.create('1', **db_kwargs),
                    group_db=None)
     app.listen(port)
-    print('Starting app on 0.0.0.0:{}'.format(port))
+    logger.info('Starting app on 0.0.0.0:{}'.format(port))
 
     IOLoop.current().start()
 

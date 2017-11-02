@@ -1,29 +1,58 @@
 {
-	"variables": [],
 	"info": {
 		"name": "Berkshire API",
 		"_postman_id": "33ea7f09-b9ce-6a2d-ded5-fb991a4e64be",
 		"description": "This API is a group planning platform. One of its features is the ability\n for groups to decide via voting.\n",
-		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "Activities",
+			"name": "Activity",
 			"description": "Folder for groups",
 			"item": [
 				{
-					"name": "Get an activity (200)",
-					"request": {
-						"url": "http://{{host}}/group/{{groupId}}/activity/{{activityId}}",
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"description": ""
+					"name": "Get an activity",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;"
+								]
 							}
-						],
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.clearEnvironmentVariable(\"groupId\");",
+									"postman.setEnvironmentVariable(\"groupId\", data.activity.get.groupId);",
+									"",
+									"postman.clearEnvironmentVariable(\"activityId\");",
+									"postman.setEnvironmentVariable(\"activityId\", data.activity.get.activityId);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
 						"body": {},
+						"url": {
+							"raw": "http://{{host}}/group/{{groupId}}/activity/{{activityId}}",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"group",
+								"{{groupId}}",
+								"activity",
+								"{{activityId}}"
+							]
+						},
 						"description": ""
 					},
 					"response": []
@@ -36,24 +65,48 @@
 							"script": {
 								"type": "text/javascript",
 								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;"
+									"tests[\"Status code is 201\"] = responseCode.code === 201;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.clearEnvironmentVariable(\"groupId\");",
+									"postman.setEnvironmentVariable(\"groupId\", data.activity.put.groupId);",
+									"",
+									"postman.clearEnvironmentVariable(\"activityId\");",
+									"postman.setEnvironmentVariable(\"activityId\", data.activity.put.activityId);"
 								]
 							}
 						}
 					],
 					"request": {
-						"url": "http://{{host}}/group/{{groupId}}/activity/{{activityId}}",
 						"method": "PUT",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{{putPayload}}"
+							"raw": "{{data.activity.put.payload}}"
+						},
+						"url": {
+							"raw": "http://{{host}}/group/{{groupId}}/activity/{{activityId}}",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"group",
+								"{{groupId}}",
+								"activity",
+								"{{activityId}}"
+							]
 						},
 						"description": ""
 					},
@@ -61,11 +114,47 @@
 				},
 				{
 					"name": "Delete an activity\n",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 204\"] = responseCode.code === 204;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.clearEnvironmentVariable(\"groupId\");",
+									"postman.setEnvironmentVariable(\"groupId\", data.activity.delete.groupId);",
+									"",
+									"postman.clearEnvironmentVariable(\"activityId\");",
+									"postman.setEnvironmentVariable(\"activityId\", data.activity.delete.activityId);"
+								]
+							}
+						}
+					],
 					"request": {
-						"url": "http://{{host}}/group/{{groupId}}/activity/{{activityId}}",
 						"method": "DELETE",
 						"header": [],
 						"body": {},
+						"url": {
+							"raw": "http://{{host}}/group/{{groupId}}/activity/{{activityId}}",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"group",
+								"{{groupId}}",
+								"activity",
+								"{{activityId}}"
+							]
+						},
 						"description": ""
 					},
 					"response": []
@@ -73,11 +162,11 @@
 			]
 		},
 		{
-			"name": "Groups",
+			"name": "Activities",
 			"description": "",
 			"item": [
 				{
-					"name": "Create or update a group",
+					"name": "Get activities",
 					"event": [
 						{
 							"listen": "test",
@@ -87,21 +176,184 @@
 									"tests[\"Status code is 200\"] = responseCode.code === 200;"
 								]
 							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.clearEnvironmentVariable(\"groupId\");",
+									"postman.setEnvironmentVariable(\"groupId\", data.activities.get.groupId);"
+								]
+							}
 						}
 					],
 					"request": {
-						"url": "http://{{host}}/group/{{groupId}}",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "http://{{host}}/group/{{groupId}}/activities",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"group",
+								"{{groupId}}",
+								"activities"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Create an activitiy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 201\"] = responseCode.code === 201;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.clearEnvironmentVariable(\"groupId\");",
+									"postman.setEnvironmentVariable(\"groupId\", data.activities.post.groupId);",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "http://{{host}}/group/{{groupId}}/activities",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"group",
+								"{{groupId}}",
+								"activities"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Group",
+			"description": "",
+			"item": [
+				{
+					"name": "Get a group",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.clearEnvironmentVariable(\"groupId\");",
+									"postman.setEnvironmentVariable(\"groupId\", data.group.get.groupId);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "http://{{host}}/group/{{groupId}}",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"group",
+								"{{groupId}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Create or update a group",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.clearEnvironmentVariable(\"groupId\");",
+									"postman.setEnvironmentVariable(\"groupId\", data.group.put.groupId);"
+								]
+							}
+						}
+					],
+					"request": {
 						"method": "PUT",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{{groups.put.payload}}"
+							"raw": "{{data.group.put.payload}}"
+						},
+						"url": {
+							"raw": "http://{{host}}/group/{{groupId}}",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"group",
+								"{{groupId}}"
+							]
 						},
 						"description": ""
 					},

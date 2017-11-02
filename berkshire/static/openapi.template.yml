@@ -185,17 +185,6 @@ paths:
         500:
           description: Internal server error
 
-    delete:
-      tags:
-      - Groups
-      summary: Delete a group
-      operationId: "deleteGroup"
-      responses:
-        204:
-          description: Deleted or nothing was done
-        500:
-          description: Internal server error
-
   /group/{groupId}/activity/{activityId}:
     parameters:
       - $ref: '#/parameters/groupId'
