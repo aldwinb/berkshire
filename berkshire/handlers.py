@@ -1,13 +1,13 @@
 import http
-import simplejson as json
+# import simplejson as json
 
 from datetime import datetime
 from tornado.web import RequestHandler
 
-try:
-    from .validators import is_payload_valid
-except ImportError:
-    from validators import is_payload_valid
+# try:
+#     from .validators import is_payload_valid
+# except ImportError:
+#     from validators import is_payload_valid
 
 
 DATETIME_FORMAT = '%Y-%m-%dT%X'
@@ -94,6 +94,7 @@ class ActivitiesHandler(BaseRequestHandler):
         # self.write({'message': 'Success'})
         self.finish()
 
+
 class ActivityHandler(BaseRequestHandler):
     """Serves as the request handler for /activity endpoint."""
     def initialize(self, db):
@@ -164,15 +165,15 @@ class GroupHandler(BaseRequestHandler):
         Args:
             group_id: The unique identifier of the group.
         """
-        payload = json.loads(self.request.body.decode('utf-8'))
-
-        is_valid = is_payload_valid(payload)
-
-        if not is_valid:
-            self.set_status(http.HTTPStatus.BAD_REQUEST)
-            self.finish()
-
-        self.__db.upsert(id=group_id, obj=payload)
+        # payload = json.loads(self.request.body.decode('utf-8'))
+        #
+        # is_valid = is_payload_valid(payload)
+        #
+        # if not is_valid:
+        #     self.set_status(http.HTTPStatus.BAD_REQUEST)
+        #     self.finish()
+        #
+        # self.__db.upsert(id=group_id, obj=payload)
         self.set_status(http.HTTPStatus.CREATED)
         self.finish()
 
@@ -184,13 +185,16 @@ class GroupHandler(BaseRequestHandler):
         Args:
             group_id: The unique identifier of the group.
         """
-        group = self.__db.get(id=group_id)
-        if group:
-            self.set_status(http.HTTPStatus.OK)
-            self.write(group)
-        else:
-            self.set_status(http.HTTPStatus.NOT_FOUND)
-            self.finish()
+        # group = self.__db.get(id=group_id)
+        # if group:
+        #     self.set_status(http.HTTPStatus.OK)
+        #     self.write(group)
+        # else:
+        #     self.set_status(http.HTTPStatus.NOT_FOUND)
+        #     self.finish()
+
+        self.set_status(http.HTTPStatus.OK)
+        self.write({})
 
     def delete(self, group_id):
         """Handles the DELETE method of the /group endpoint.
@@ -200,7 +204,7 @@ class GroupHandler(BaseRequestHandler):
         Args:
             group_id: The unique identifier of the group.
         """
-        self.__db.delete(id=group_id)
+        # self.__db.delete(id=group_id)
         self.set_status(http.HTTPStatus.NO_CONTENT)
         self.finish()
 

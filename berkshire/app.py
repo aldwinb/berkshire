@@ -8,9 +8,11 @@ from tornado.ioloop import IOLoop
 from tornado.web import (Application, StaticFileHandler)
 
 try:
-    from .handlers import *
+    from .handlers import (PingHandler, ActivityHandler, ActivitiesHandler,
+                           GroupHandler)
 except ModuleNotFoundError:
-    from handlers import *
+    from handlers import (PingHandler, ActivityHandler, ActivitiesHandler,
+                          GroupHandler)
 
 
 def make_app(activity_db, group_db):

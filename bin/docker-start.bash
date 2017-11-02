@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 
-set -e
+set -ETeu -o pipefail
+
+function cleanup() {
+  docker-compose down
+}
+
+trap cleanup exit
 
 while [[ ${#} -gt 0 ]]; do
   opt="${1}"
