@@ -15,7 +15,4 @@ before_install:
     fi
 
 script:
-  docker run --rm \
-  -v $(pwd):/usr/src/app \
-  -w /usr/src/app \
-  ${DOCKER_BERKSHIRE_DEV_IMAGE} tox
+  docker run --rm -v $(pwd):/usr/src/app -w /usr/src/app ${DOCKER_BERKSHIRE_DEV_IMAGE} tox
