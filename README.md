@@ -2,8 +2,13 @@
 
 A web service that allows groups to plan their own events
 
-### Setting up development environment ###
+### Running the application ###
 
 ```bash
 bash bin/docker-start.bash
+```
+
+### Running tests ####
+```bash
+bash bin/run-tests.bash
 ```
