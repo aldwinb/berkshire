@@ -63,7 +63,7 @@ class TestGenericResourceEndpoint(AsyncHTTPTestCase):
 
     @parameterized.expand([
         # ('/activity/123', {'name': 'Yolo'}, 'activity', '123'),
-        # ('/group/456', {'name': 'my-grouper'}, 'group', '456'),
+        ('/group/456', {'name': 'my-grouper'}, 'group', '456'),
     ])
     def test_should_put_resource(self, route, request_body_json,
                                  db_id, resource_id):

@@ -308,15 +308,30 @@
 					"response": []
 				},
 				{
-					"name": "Create or update a group",
+					"name": "Create a group",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"type": "text/javascript",
 								"exec": [
-									"pm.test(\"Status code is 201\", function () {",
+									"",
+									"const host = pm.environment.get('host');",
+									"const groupId = pm.environment.get('groupId');",
+									"const expectedBody = JSON.parse(pm.request.body.raw);",
+									"",
+									"// test status code",
+									"pm.test('should create group', function () {",
 									"    pm.response.to.have.status(201);",
+									"    // pm.response.to.have.header('Location', '/group' + groupId);",
+									"});",
+									"",
+									"//test if object was created",
+									"pm.sendRequest('http://' + host + '/group/' + groupId, function (err, res) {",
+									"  if (err) { console.log(err); }",
+									"  pm.test('should have persisted group', function () {",
+									"    pm.expect(res).to.equal(expectedBody);",
+									"  });",
 									"});"
 								]
 							}
@@ -326,8 +341,17 @@
 							"script": {
 								"type": "text/javascript",
 								"exec": [
-									"postman.clearEnvironmentVariable(\"groupId\");",
-									"postman.setEnvironmentVariable(\"groupId\", data.group.put.groupId);"
+									"pm.environment.unset('groupId');",
+									"pm.environment.set('groupId', data.group.put.groupId);",
+									"",
+									"const host = pm.environment.get('host');",
+									"const deleteRequest = {",
+									"  url: 'http://' + host + '/group/' + data.group.put.groupId,",
+									"  method: 'DELETE'",
+									"};",
+									"pm.sendRequest(deleteRequest, function (err, res) {",
+									"  if (err) { console.log(err); }",
+									"});"
 								]
 							}
 						}
@@ -342,7 +366,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{{data.group.put.payload}}"
+							"raw": "{\n\t\"name\": \"dabarkads\"\n}"
 						},
 						"url": {
 							"raw": "http://{{host}}/group/{{groupId}}",

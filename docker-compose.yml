@@ -12,8 +12,8 @@ services:
     working_dir: /usr/src/app
     environment:
       - STDIN_OPEN=${STDIN_OPEN}
-      - COUCHDB_HOST=http://admin:berkshire@couchdb:5984
-      - COUCHDB_ACTIVITY_DB=activity
+      - ACTIVITY_DB={"type":"couchdb", "key":"activity", "options":{"host":"http://admin:berkshire@couchdb:5984", "db_name":"activity"}}
+      - GROUP_DB={"type":"couchdb", "key":"group", "options":{"host":"http://admin:berkshire@couchdb:5984", "db_name":"activity"}}
       - APP_ENV=${APP_ENV:-local}
       - DETACHED=${DETACHED:-0}
     expose:

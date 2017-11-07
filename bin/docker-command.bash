@@ -9,7 +9,7 @@ done
 
 >&2 echo "CouchDB is up - executing command"
 
-python docker-setup.py
+python dbsetup.py
 
 if [ "${DETACHED}" -eq "1" ]; then
   tail -f /dev/null

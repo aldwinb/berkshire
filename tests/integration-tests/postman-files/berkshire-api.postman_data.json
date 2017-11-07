@@ -34,13 +34,10 @@
     },
     "group": {
       "get": {
-        "groupId": "12345"
+        "groupId": "34512"
       },
       "put": {
-        "groupId": "12345",
-        "payload": {
-          "name": "my-kind-of-group"
-        }
+        "groupId": "52987493"
       }
     }
   }

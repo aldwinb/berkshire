@@ -1,5 +1,5 @@
 import http
-# import simplejson as json
+import simplejson as json
 
 from datetime import datetime
 from tornado.web import RequestHandler
@@ -158,43 +158,36 @@ class GroupHandler(BaseRequestHandler):
         return cors
 
     def put(self, group_id):
-        """Handles the PUT method of the /group endpoint.
-
-        Creates or updates a group object.
+        """Creates or updates a group object.
 
         Args:
             group_id: The unique identifier of the group.
         """
-        # payload = json.loads(self.request.body.decode('utf-8'))
+        payload = json.loads(self.request.body.decode('utf-8'))
         #
         # is_valid = is_payload_valid(payload)
-        #
+
         # if not is_valid:
         #     self.set_status(http.HTTPStatus.BAD_REQUEST)
         #     self.finish()
-        #
-        # self.__db.upsert(id=group_id, obj=payload)
+
+        self.__db.upsert(id=group_id, obj=payload)
         self.set_status(http.HTTPStatus.CREATED)
         self.finish()
 
     def get(self, group_id):
-        """Handles the GET method of the /group endpoint.
-
-        Gets an group object.
+        """Gets a group object.
 
         Args:
-            group_id: The unique identifier of the group.
+            group_id: The unique identifier of the group object.
         """
-        # group = self.__db.get(id=group_id)
-        # if group:
-        #     self.set_status(http.HTTPStatus.OK)
-        #     self.write(group)
-        # else:
-        #     self.set_status(http.HTTPStatus.NOT_FOUND)
-        #     self.finish()
-
-        self.set_status(http.HTTPStatus.OK)
-        self.write({})
+        group = self.__db.get(id=group_id)
+        if group:
+            self.set_status(http.HTTPStatus.OK)
+            self.write(group)
+        else:
+            self.set_status(http.HTTPStatus.NOT_FOUND)
+            self.finish()
 
     def delete(self, group_id):
         """Handles the DELETE method of the /group endpoint.

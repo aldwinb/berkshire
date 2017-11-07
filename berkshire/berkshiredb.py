@@ -6,7 +6,7 @@ class DbContext(object):
     """The base class for all database contexts."""
 
     __context_types = {
-        '1': 'CouchDbContext',
+        'couchdb': 'CouchDbContext',
     }
 
     def get(self, id):
