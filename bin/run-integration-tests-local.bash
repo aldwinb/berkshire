@@ -36,14 +36,14 @@ function run_integration_tests() {
   # Copy Postman environment file
   cp ${postman_environment_file} ${postman_env_file_target}
 
-  docker-compose -f docker-compose-integration-test.yml \
+  docker-compose -f docker-compose-test.yml \
   -p berkshire-test \
   run integration-test || exit 1
 }
 
 function cleanup() {
   rm ${postman_env_file_target}
-  docker-compose -f docker-compose-integration-test.yml \
+  docker-compose -f docker-compose-test.yml \
   -p berkshire-test \
   down
 }

@@ -264,15 +264,19 @@
 			"description": "",
 			"item": [
 				{
-					"name": "Get a group",
+					"name": "Create a group",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"type": "text/javascript",
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
+									"// test status code",
+									"pm.environment.set('expectedBody', JSON.parse(pm.request.body.raw));",
+									"",
+									"pm.test('should create a group', function () {",
+									"    pm.response.to.have.status(201);",
+									"    // pm.response.to.have.header('Location', '/group' + groupId);",
 									"});"
 								]
 							}
@@ -282,8 +286,55 @@
 							"script": {
 								"type": "text/javascript",
 								"exec": [
-									"postman.clearEnvironmentVariable(\"groupId\");",
-									"postman.setEnvironmentVariable(\"groupId\", data.group.get.groupId);"
+									"pm.environment.unset('groupId');",
+									"pm.environment.set('groupId', data.group.groupId);",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"dabarkads\"\n}"
+						},
+						"url": {
+							"raw": "http://{{host}}/group/{{groupId}}",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"group",
+								"{{groupId}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Get a group",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"const expectedBody = pm.environment.get('expectedBody');",
+									"",
+									"//test if object was created",
+									"pm.test('should get a group', function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(pm.response.json()).to.eql(expectedBody);",
+									"});"
 								]
 							}
 						}
@@ -308,49 +359,19 @@
 					"response": []
 				},
 				{
-					"name": "Create a group",
+					"name": "Update a group",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"type": "text/javascript",
 								"exec": [
+									"pm.environment.unset('expectedBody');",
+									"pm.environment.set('expectedBody', JSON.parse(pm.request.body.raw));",
 									"",
-									"const host = pm.environment.get('host');",
-									"const groupId = pm.environment.get('groupId');",
-									"const expectedBody = JSON.parse(pm.request.body.raw);",
-									"",
-									"// test status code",
-									"pm.test('should create group', function () {",
-									"    pm.response.to.have.status(201);",
+									"pm.test('should update a group', function () {",
+									"    pm.response.to.have.status(204);",
 									"    // pm.response.to.have.header('Location', '/group' + groupId);",
-									"});",
-									"",
-									"//test if object was created",
-									"pm.sendRequest('http://' + host + '/group/' + groupId, function (err, res) {",
-									"  if (err) { console.log(err); }",
-									"  pm.test('should have persisted group', function () {",
-									"    pm.expect(res).to.equal(expectedBody);",
-									"  });",
-									"});"
-								]
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"pm.environment.unset('groupId');",
-									"pm.environment.set('groupId', data.group.put.groupId);",
-									"",
-									"const host = pm.environment.get('host');",
-									"const deleteRequest = {",
-									"  url: 'http://' + host + '/group/' + data.group.put.groupId,",
-									"  method: 'DELETE'",
-									"};",
-									"pm.sendRequest(deleteRequest, function (err, res) {",
-									"  if (err) { console.log(err); }",
 									"});"
 								]
 							}
@@ -358,16 +379,118 @@
 					],
 					"request": {
 						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
+						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"name\": \"dabarkads\"\n}"
+							"raw": "{\n\t\"name\": \"dabarkads-2\"\n}"
 						},
+						"url": {
+							"raw": "http://{{host}}/group/{{groupId}}",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"group",
+								"{{groupId}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Get an updated group",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"const expectedBody = pm.environment.get('expectedBody');",
+									"",
+									"//test if object was created",
+									"pm.test('should get an updated group', function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(pm.response.json()).to.eql(expectedBody);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "http://{{host}}/group/{{groupId}}",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"group",
+								"{{groupId}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a group",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('should delete a group', function () {",
+									"    pm.response.to.have.status(204);",
+									"    // pm.response.to.have.header('Location', '/group' + groupId);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "http://{{host}}/group/{{groupId}}",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"group",
+								"{{groupId}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Should't get a deleted group",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('should get an updated group', function () {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
 						"url": {
 							"raw": "http://{{host}}/group/{{groupId}}",
 							"protocol": "http",

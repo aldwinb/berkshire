@@ -24,32 +24,13 @@ EOF
 }
 
 function run_unit_tests() {
-  docker-compose run app tox
+  docker-compose -f docker-compose-test.yml \
+  -p berkshire-test \
+  run app tox || exit 1
 }
 
 function run_integration_tests() {
-  # Get the absolute integration tests directory path because we're going to
-  # run the tests from that path
-  integration_tests_directory=$(cd "$(dirname "${BASH_SOURCE[0]}")"/.. && pwd)/tests/integration-tests
-
-  # If Postman environment file exists for some reason, delete it
-  if [ -e "postman_environment.json" ]; then
-    rm ${integration_tests_directory}/postman-files/postman_environment.json
-  fi
-
-  # Copy Postman environment file
-  cp ${postman_environment_file} ${integration_tests_directory}/postman-files/postman_environment.json
-
-  # Switch directory and run test
-  prev=$(pwd)
-  test_result=0
-  cd ${integration_tests_directory}
-  docker-compose run integration-test || test_result=1
-  cd ${prev}
-
-  # Teardown the setup of the test
-  rm ${integration_tests_directory}/postman-files/postman_environment.json
-
+  bash bin/run-integration-tests-local.bash -p ${postman_environment_file}
 }
 
 postman_environment_file=
@@ -78,5 +59,3 @@ fi
 
 run_unit_tests || exit 1
 run_integration_tests || exit 1
-
-# exit ${test_result}

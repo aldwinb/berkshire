@@ -5,14 +5,15 @@ language: python
 services:
   - docker
 
-before_install:
-  - export DOCKER_BASE_VERSION=$(cat base-version.txt)
-  - export DOCKER_BERKSHIRE_DEV_IMAGE=aldwinb/berkshire-dev:${DOCKER_BASE_VERSION}
-  - if ! docker pull ${DOCKER_BERKSHIRE_DEV_IMAGE}; then
-    docker build --rm -t ${DOCKER_BERKSHIRE_DEV_IMAGE} .;
-    docker login -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}";
-    docker push ${DOCKER_BERKSHIRE_DEV_IMAGE};
-    fi
+#before_install:
+#  - export DOCKER_BASE_VERSION=$(cat base-version.txt)
+#  - export DOCKER_BERKSHIRE_DEV_IMAGE=aldwinb/berkshire-dev:${DOCKER_BASE_VERSION}
+#  - if ! docker pull ${DOCKER_BERKSHIRE_DEV_IMAGE}; then
+#    docker build --rm -t ${DOCKER_BERKSHIRE_DEV_IMAGE} .;
+#    docker login -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}";
+#    docker push ${DOCKER_BERKSHIRE_DEV_IMAGE};
+#    fi
 
 script:
-  docker run --rm -v $(pwd):/usr/src/app -w /usr/src/app ${DOCKER_BERKSHIRE_DEV_IMAGE} tox
+  bash bin/run-tests.bash
+  # docker run --rm -v $(pwd):/usr/src/app -w /usr/src/app ${DOCKER_BERKSHIRE_DEV_IMAGE} tox

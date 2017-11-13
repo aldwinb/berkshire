@@ -69,6 +69,8 @@ def main():
     logging.basicConfig()
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
+    logging.getLogger('berkshiredb').setLevel(logging.DEBUG)
+    logging.getLogger('handlers').setLevel(logging.DEBUG)
 
     # Create OpenAPI spec document
     create_openapi_spec()

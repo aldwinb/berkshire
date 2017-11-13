@@ -7,7 +7,7 @@ until wget -s http://app:8081 &> /dev/null; do
   sleep 1
 done
 
->&2 echo "Berkshire app is up - executing command"
+>&2 echo "Berkshire app is up - running tests"
 
 newman run berkshire-api.postman_collection.json \
   -e postman_environment.json \

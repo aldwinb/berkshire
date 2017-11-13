@@ -1,4 +1,5 @@
 import http
+import logging
 import simplejson as json
 
 from datetime import datetime
@@ -9,6 +10,8 @@ from tornado.web import RequestHandler
 # except ImportError:
 #     from validators import is_payload_valid
 
+logging.basicConfig()
+logger = logging.getLogger(__name__)
 
 DATETIME_FORMAT = '%Y-%m-%dT%X'
 
@@ -171,8 +174,11 @@ class GroupHandler(BaseRequestHandler):
         #     self.set_status(http.HTTPStatus.BAD_REQUEST)
         #     self.finish()
 
-        self.__db.upsert(id=group_id, obj=payload)
-        self.set_status(http.HTTPStatus.CREATED)
+        status = self.__db.upsert(id=group_id, obj=payload)
+        if status == 1:
+            self.set_status(http.HTTPStatus.NO_CONTENT)
+        else:
+            self.set_status(http.HTTPStatus.CREATED)
         self.finish()
 
     def get(self, group_id):
@@ -197,7 +203,7 @@ class GroupHandler(BaseRequestHandler):
         Args:
             group_id: The unique identifier of the group.
         """
-        # self.__db.delete(id=group_id)
+        self.__db.delete(id=group_id)
         self.set_status(http.HTTPStatus.NO_CONTENT)
         self.finish()
 

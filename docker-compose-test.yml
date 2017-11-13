@@ -24,8 +24,6 @@ services:
     environment:
       COUCHDB_USER: admin
       COUCHDB_PASSWORD: berkshire
-    volumes:
-      - berkshire-couchdb-test-vol-1:/opt/couchdb/data
 
   integration-test:
     image: postman/newman_alpine33
@@ -38,6 +36,3 @@ services:
     entrypoint:
       - sh
       - /usr/local/berkshire/bin/local-integration-test-entrypoint.sh
-
-volumes:
-  berkshire-couchdb-test-vol-1:
