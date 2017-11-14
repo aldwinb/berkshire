@@ -1,12 +1,16 @@
 import sys
 import couchdb
+import logging
+
+logging.basicConfig()
+logger = logging.getLogger(__name__)
 
 
 class DbContext(object):
     """The base class for all database contexts."""
 
     __context_types = {
-        '1': 'CouchDbContext',
+        'couchdb': 'CouchDbContext',
     }
 
     def get(self, id):
@@ -63,6 +67,8 @@ class DbContext(object):
 class CouchDbContext(DbContext):
     """A DbContext that wraps a CouchDb server."""
 
+    DOCUMENT_RESERVED_KEYS = {'_id', '_rev'}
+
     def __init__(self, host, db_name):
         server = couchdb.Server(host)
         if db_name not in server:
@@ -82,8 +88,8 @@ class CouchDbContext(DbContext):
         """
         doc = self.__db.get(id)
         if doc:
-            doc.pop('id')
-            doc.pop('rev')
+            for key in self.DOCUMENT_RESERVED_KEYS:
+                doc.pop(key)
 
         return doc or {}
 
@@ -120,12 +126,19 @@ class CouchDbContext(DbContext):
         Args:
             id: A string that identifies the CouchDb document.
             obj: A dictionary representing the CouchDb document.
+
+        Returns:
+            An integer value indicating if the operation was an insert or
+            update (0 = insert, 1 = update).
         """
 
         doc = self.__db.get(id)
         if doc:
+            obj['_rev'] = doc.rev
             self.__db[id] = obj
         else:
             # Set the id of the document to the id that was passed as input
             obj['_id'] = id
             self.__db.save(obj)
+
+        return 1 if doc else 0

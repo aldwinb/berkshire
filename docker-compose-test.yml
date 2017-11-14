@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: .
+    container_name: berkshire-app-test-1
+    volumes:
+      - .:/usr/src/app
+    depends_on:
+      - couchdb
+    working_dir: /usr/src/app
+    environment:
+      - APP_ENV=${APP_ENV:-local}
+    env_file:
+      - environment/local/env_vars.bash
+    expose:
+      - "8081"
+    command: ["bash", "bin/app-command.bash"]
+
+  couchdb:
+    image: klaemo/couchdb:latest
+    container_name: berkshire-couchdb-test-1
+    environment:
+      COUCHDB_USER: admin
+      COUCHDB_PASSWORD: berkshire
+
+  integration-test:
+    image: postman/newman_alpine33
+    container_name: berkshire-newman-1
+    depends_on:
+      - app
+    volumes:
+      - ./bin:/usr/local/berkshire/bin
+      - ./tests/integration-tests/postman-files:/etc/newman
+    entrypoint:
+      - sh
+      - /usr/local/berkshire/bin/integration-test-entrypoint.sh

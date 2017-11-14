@@ -2,6 +2,9 @@
 
 set -ETeu -o pipefail
 
+integration_tests_directory=$(cd "$(dirname "${BASH_SOURCE[0]}")"/.. && pwd)/tests/integration-tests
+postman_env_file_target=${integration_tests_directory}/postman-files/postman_environment.json
+
 #######################################
 #
 # Prints a message then exits with a non-zero code.
@@ -19,26 +22,41 @@ function die() {
 #######################################
 function usage() {
   cat <<EOF
-Usage: bash bin/run-tests.bash -p postman-environment-file
+Usage: bash bin/run-integration-tests-local.bash -p postman-environment-file
 EOF
 }
 
-function run_unit_tests() {
+function run_integration_tests() {
+
+  # If Postman environment file exists for some reason, delete it
+  if [[ -e ${postman_env_file_target} ]]; then
+    cleanup
+  fi
+
+  # Copy Postman environment file
+  cp ${postman_environment_file} ${postman_env_file_target}
+
   docker-compose -f docker-compose-test.yml \
   -p berkshire-test \
-  run app tox || exit 1
+  run integration-test || exit 1
 }
 
-function run_integration_tests() {
-  bash bin/run-integration-tests.bash -p ${postman_environment_file}
+function cleanup() {
+  rm ${postman_env_file_target}
+  docker-compose -f docker-compose-test.yml \
+  -p berkshire-test \
+  down
 }
 
-postman_environment_file=
 #######################################
 #
 # main
 #
 #######################################
+if [[ ${#} -eq 0 ]]; then
+  die $(usage)
+fi
+
 while [[ ${#} -gt 0 ]]; do
   opt="${1}"
   case ${opt} in
@@ -48,7 +66,7 @@ while [[ ${#} -gt 0 ]]; do
       shift;
       ;;
     *)
-      die usage
+      die $(usage)
       ;;
   esac
 done
@@ -57,5 +75,5 @@ if [ -z "${postman_environment_file}" ]; then
   die $(usage)
 fi
 
-run_unit_tests || exit 1
+trap cleanup EXIT
 run_integration_tests || exit 1

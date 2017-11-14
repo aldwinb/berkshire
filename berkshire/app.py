@@ -1,6 +1,7 @@
 import os
 import shutil
 import logging
+import simplejson as json
 
 from pathlib import Path
 from tornado import autoreload
@@ -68,25 +69,30 @@ def main():
     logging.basicConfig()
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
+    logging.getLogger('berkshiredb').setLevel(logging.DEBUG)
+    logging.getLogger('handlers').setLevel(logging.DEBUG)
 
     # Create OpenAPI spec document
     create_openapi_spec()
 
-    # Initialize CouchDB
-    couchdb_host = os.environ['COUCHDB_HOST']
-    activity_db_name = os.environ['COUCHDB_ACTIVITY_DB']
-    db_kwargs = {
-        'host': couchdb_host,
-        'db_name': activity_db_name
-    }
+    # Initialize databases
+
+    db_options = [os.environ.get('ACTIVITY_DB'), os.environ.get('GROUP_DB')]
+    dbs = {}
+    for opt in db_options:
+        json_opt = json.loads(opt)
+        db_type = json_opt.get('type')
+        db_key = json_opt.get('key')
+        db_kwargs = json_opt.get('options')
+        dbs[db_key] = berkshiredb.DbContext.create(db_type, **db_kwargs)
 
     # Add some files to the 'auto reload watch list' during development
     if os.environ['APP_ENV'] == 'local':
         watch_files(paths=['berkshire/static'])
 
     port = 8081
-    app = make_app(activity_db=berkshiredb.DbContext.create('1', **db_kwargs),
-                   group_db=None)
+    app = make_app(activity_db=dbs['activity'],
+                   group_db=dbs['group'])
     app.listen(port)
     logger.info('Starting app on 0.0.0.0:{}'.format(port))
 

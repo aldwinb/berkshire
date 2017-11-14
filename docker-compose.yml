@@ -4,7 +4,7 @@ services:
   app:
     build:
       context: .
-    container_name: berkshire-1
+    container_name: berkshire-app-1
     volumes:
       - .:/usr/src/app
     depends_on:
@@ -12,18 +12,19 @@ services:
     working_dir: /usr/src/app
     environment:
       - STDIN_OPEN=${STDIN_OPEN}
-      - COUCHDB_HOST=http://admin:berkshire@couchdb:5984
-      - COUCHDB_ACTIVITY_DB=activity
       - APP_ENV=${APP_ENV:-local}
       - DETACHED=${DETACHED:-0}
+    env_file:
+      - environment/local/env_vars.bash
     expose:
       - "8081"
     ports:
       - "8081:8081"
-    command: ["bash", "bin/docker-command.bash"]
+    command: ["bash", "bin/app-command.bash"]
 
   postgresql:
     image: postgres:alpine
+    container_name: berkshire-postgres-1
     environment:
       POSTGRES_PASSWORD: berkshire
     volumes:
@@ -31,11 +32,10 @@ services:
 
   couchdb:
     image: klaemo/couchdb:latest
+    container_name: berkshire-couchdb-1
     environment:
       COUCHDB_USER: admin
       COUCHDB_PASSWORD: berkshire
-    ports:
-      - "5984:5984"
     volumes:
       - berkshire-couchdb-vol-1:/opt/couchdb/data
 
