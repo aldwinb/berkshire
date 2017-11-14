@@ -2,6 +2,9 @@
 
 set -ETeu -o pipefail
 
+integration_tests_directory=$(cd "$(dirname "${BASH_SOURCE[0]}")"/.. && pwd)/tests/integration-tests
+postman_env_file_target=${integration_tests_directory}/postman-files/postman_environment.json
+
 #######################################
 #
 # Prints a message then exits with a non-zero code.
@@ -19,41 +22,41 @@ function die() {
 #######################################
 function usage() {
   cat <<EOF
-Usage: bash bin/run-tests.bash -p postman-environment-file
+Usage: bash bin/run-integration-tests-local.bash -p postman-environment-file
 EOF
 }
 
 function run_integration_tests() {
-  # Get the absolute integration tests directory path because we're going to
-  # run the tests from that path
-  integration_tests_directory=$(cd "$(dirname "${BASH_SOURCE[0]}")"/.. && pwd)/tests/integration-tests
 
   # If Postman environment file exists for some reason, delete it
-  if [ -e "postman_environment.json" ]; then
-    rm ${integration_tests_directory}/postman-files/postman_environment.json
+  if [[ -e ${postman_env_file_target} ]]; then
+    cleanup
   fi
 
   # Copy Postman environment file
-  cp ${postman_environment_file} ${integration_tests_directory}/postman-files/postman_environment.json
+  cp ${postman_environment_file} ${postman_env_file_target}
 
-  # Switch directory and run test
-  prev=$(pwd)
-  test_result=0
-  cd ${integration_tests_directory}
-  docker-compose run integration-test || test_result=1
-  cd ${prev}
-
-  # Teardown the setup of the test
-  rm ${integration_tests_directory}/postman-files/postman_environment.json
-
+  docker-compose -f docker-compose-test.yml \
+  -p berkshire-test \
+  run integration-test || exit 1
 }
 
-postman_environment_file=
+function cleanup() {
+  rm ${postman_env_file_target}
+  docker-compose -f docker-compose-test.yml \
+  -p berkshire-test \
+  down
+}
+
 #######################################
 #
 # main
 #
 #######################################
+if [[ ${#} -eq 0 ]]; then
+  die $(usage)
+fi
+
 while [[ ${#} -gt 0 ]]; do
   opt="${1}"
   case ${opt} in
@@ -63,7 +66,7 @@ while [[ ${#} -gt 0 ]]; do
       shift;
       ;;
     *)
-      die usage
+      die $(usage)
       ;;
   esac
 done
@@ -72,4 +75,5 @@ if [ -z "${postman_environment_file}" ]; then
   die $(usage)
 fi
 
+trap cleanup EXIT
 run_integration_tests || exit 1

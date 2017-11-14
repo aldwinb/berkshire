@@ -30,7 +30,7 @@ function run_unit_tests() {
 }
 
 function run_integration_tests() {
-  bash bin/run-integration-tests-local.bash -p ${postman_environment_file}
+  bash bin/run-integration-tests.bash -p ${postman_environment_file}
 }
 
 postman_environment_file=

@@ -16,7 +16,7 @@ while [[ ${#} -gt 0 ]]; do
       shift
       ;;
     *)
-      echo "Usage: bash bin/docker-start.bash [-d]"
+      echo "Usage: bash bin/app-start.bash [-d]"
       exit 1
       ;;
   esac

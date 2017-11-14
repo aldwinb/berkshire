@@ -2,19 +2,17 @@
 
 A web service that allows groups to plan their own events
 
-### Running the application ###
+### Development ###
+
+All development is done in Docker containers, so you must have [Docker](https://www.docker.com/what-docker) installed.
+
+To run the application, simply execute:
 
 ```bash
-bash bin/docker-start.bash
+bash bin/app-start.bash
 ```
 
-### Running tests ####
+To run all tests, execute:
 ```bash
-bash bin/run-tests.bash
-```
-
-To run integration tests locally:
-```bash
-bash bin/run-integration-tests-local.bash -p POSTMAN_ENVIRONMENT_FILE
-
+bash bin/run-tests.bash -p POSTMAN ENVIRONMENT FILE
 ```

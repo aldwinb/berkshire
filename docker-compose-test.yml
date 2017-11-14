@@ -35,4 +35,4 @@ services:
       - ./tests/integration-tests/postman-files:/etc/newman
     entrypoint:
       - sh
-      - /usr/local/berkshire/bin/local-integration-test-entrypoint.sh
+      - /usr/local/berkshire/bin/integration-test-entrypoint.sh
