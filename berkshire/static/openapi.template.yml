@@ -1,0 +1,252 @@
+swagger: "2.0"
+info:
+  description: |
+    This API is a group planning platform. One of its features is the ability
+     for groups to decide via voting.
+
+  title: "Berkshire API"
+  version: 0.0.1
+schemes:
+  - http
+
+tags:
+- name: "Activities"
+  x-displayName: "Activities"
+  description: Create and manage group activities
+- name: "Groups"
+  x-displayName: "Groups"
+  description: Manage groups
+
+parameters:
+  groupId:
+    in: path
+    name: groupId
+    required: true
+    type: string
+    description: |
+      The unique identifier of a `group`
+  activityId:
+    in: path
+    name: activityId
+    required: true
+    type: string
+    description: |
+      The unique identifier of an `activity`
+
+definitions:
+
+  Group:
+    type: object
+    required:
+      - name
+    properties:
+      name:
+        type: string
+        description: |
+          The name of the `group`
+        example:
+          dabarkads
+
+  Activity:
+    type: object
+    required:
+      - name
+      - startDateTime
+      - endDateTime
+    properties:
+      name:
+        type: string
+        description: |
+          The name of the `activity`
+        example: Holly's birthday 2018
+      startDateTime:
+        type: string
+        format: date-time
+        description: |
+          The date and time of the start of the `activity`
+      endDateTime:
+        type: string
+        format: date-time
+        description: |
+          The date and time of the end of the `activity`
+
+  GroupActivity:
+    allOf:
+      - $ref: '#/definitions/Activity'
+      - type: object
+        properties:
+          logistics:
+            type: array
+            items:
+              $ref: '#/definitions/LogisticItem'
+
+
+  LogisticItem:
+    type: object
+    required:
+      - name
+      - schema
+    properties:
+      name:
+        type: string
+        description: |
+          The name describing the item to decide on (e.g. food, lodging)
+        example: food
+      comparisonPoints:
+        type: array
+        items:
+          $ref: '#/definitions/ComparisonPoint'
+        description: |
+          A list of fields that describe a logistic item. Fields are custom
+          These points are meant to help groups compare and contrast
+          options that they have for this logistic item. The points can be
+          customized for each item.
+
+          For example, when deciding about what food to have for a birthday
+          party, the following points could be helpful for the group:
+          * birthday package or potluck?
+          * cost for each person
+          * is it vegetarian?
+          * is it vegan?
+        example:
+          - name: package-potluck
+            displayName: 'Package or Potluck'
+            [type]: 'string'
+          - name: cost
+            displayName: 'Total cost'
+            [type]: 'number'
+
+  ComparisonPoint:
+    type: object
+    required:
+      - name
+      - [type]
+    properties:
+      name:
+        type: string
+        description: |
+          The name of the comparison point
+      displayName:
+        type: string
+        description: |
+          An optional heading that will be displayed instead of the actual name
+      [type]:
+        type: string
+        description: |
+          The type of data point
+
+paths:
+
+  /group/{groupId}:
+    parameters:
+      - $ref: '#/parameters/groupId'
+
+    get:
+      tags:
+      - Groups
+      summary: Get a group
+      operationId: getGroup
+      produces:
+      - application/json
+      responses:
+        200:
+          schema:
+            $ref: '#/definitions/Group'
+          description: |
+            Successful request
+        404:
+          description: |
+            `group` not found
+        500:
+          description: |
+            Internal server error
+
+    put:
+      tags:
+      - Groups
+      summary: |
+        Create or update a group
+      operationId: "putGroup"
+      consumes:
+      - application/json
+      parameters:
+        - name: 'group'
+          in: body
+          description: |
+            The group that will be created or updated
+          required: true
+          schema:
+            $ref: '#/definitions/Group'
+      responses:
+        201:
+          description: Created
+        204:
+          description: Updated
+        500:
+          description: Internal server error
+
+  /group/{groupId}/activity/{activityId}:
+    parameters:
+      - $ref: '#/parameters/groupId'
+      - $ref: '#/parameters/activityId'
+
+    get:
+      tags:
+      - "Activities"
+      summary: |
+        Get an activity
+      operationId: "getActivity"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          schema:
+            $ref: '#/definitions/Activity'
+          description: |
+            Successful request
+          example:
+        404:
+          description: |
+            `activity` not found
+        500:
+          description: |
+            Internal server error
+
+    put:
+      tags:
+      - "Activities"
+      summary: |
+        Create or update an activity
+      operationId: "putActivity"
+      consumes:
+      - "application/json"
+      parameters:
+        - name: 'activity'
+          in: body
+          description: |
+            The activity that will be created or updated
+          required: true
+          schema:
+            $ref: '#/definitions/Activity'
+      responses:
+        204:
+          description: |
+            Successful request.
+        500:
+          description: |
+            Internal server error.
+
+
+    delete:
+      tags:
+      - "Activities"
+      summary: |
+        Delete an activity
+      operationId: "deleteActivity"
+      responses:
+        204:
+          description: |
+            Successful request.
+        500:
+          description: |
+            Internal server error.

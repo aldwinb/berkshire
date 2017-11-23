@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  integration-test:
+    image: postman/newman_alpine33
+    container_name: newman-1
+    volumes:
+      - ./postman-files:/etc/newman
+    command: ['run', 'berkshire-api.postman_collection.json', '-e', 'postman_environment.json', '-d', 'berkshire-api.postman_data.json']
+
+networks:
+  default:
+    external:
+      name: berkshire_default
