@@ -27,10 +27,10 @@ def make_app(activity_db, group_db):
     """
     return Application([
         (r'/ping', PingHandler),
-        (r'/group/(\w+)/activity/(\w+)', ActivityHandler,
+        (r'/group/([\w-]+)/activity/([\w-]+)', ActivityHandler,
          dict(db=activity_db)),
-        (r'/group/(\w+)/activities', ActivitiesHandler, dict(db=activity_db)),
-        (r'/group/(\w+)', GroupHandler, dict(db=group_db)),
+        (r'/group/([\w-]+)/activities', ActivitiesHandler, dict(db=group_db)),
+        (r'/group/([\w-]+)', GroupHandler, dict(db=group_db)),
         (r'/js/(.*)', StaticFileHandler, {
             'path': 'js'
         }),

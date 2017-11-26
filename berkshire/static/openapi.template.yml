@@ -46,14 +46,36 @@ definitions:
           The name of the `group`
         example:
           dabarkads
+      activities:
+        type: array
+        items:
+          $ref: '#/definitions/Activity'
+        description: |
+          The list of `activities` of the group
+        example:
+          - activityId: d3668248-83f5-4a16-a53a-14281ed0959f
+            name: Joey's birthday
+            startDateTime: 2017-05-03 15:00
+            endDateTime: 2017-05-03 18:00
+          - activityId: 8318d63c-a144-4911-b066-fb514de93780
+            name: Summer camp
+            startDateTime: 2017-07-01 00:00
+            endDateTime: 2017-07-10 00:00
 
   Activity:
     type: object
     required:
+      - activityId
       - name
       - startDateTime
       - endDateTime
     properties:
+      activityId:
+        type: string
+        description: |
+          A v4 UUID that identifies the `activity`
+        example:
+          'd3668248-83f5-4a16-a53a-14281ed0959f'
       name:
         type: string
         description: |
@@ -185,6 +207,54 @@ paths:
         500:
           description: Internal server error
 
+  /group/{groupId}/actitivities:
+    parameters:
+      - $ref: '#/parameters/groupId'
+
+    get:
+      tags:
+      - "Activities"
+      summary: |
+        Get all activities of a group
+      operationId: "getActivities"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Activity'
+          description: |
+            Successful request
+        500:
+          description: |
+            Internal server error
+
+    post:
+      tags:
+      - "Activities"
+      summary: |
+        Create an activity
+      operationId: "postActivity"
+      consumes:
+      - "application/json"
+      parameters:
+        - name: 'activity'
+          in: body
+          description: |
+            The activity that will be created or updated
+          required: true
+          schema:
+            $ref: '#/definitions/Activity'
+      responses:
+        200:
+          description: |
+            Successful request.
+        500:
+          description: |
+            Internal server error.
+
   /group/{groupId}/activity/{activityId}:
     parameters:
       - $ref: '#/parameters/groupId'
@@ -211,31 +281,6 @@ paths:
         500:
           description: |
             Internal server error
-
-    put:
-      tags:
-      - "Activities"
-      summary: |
-        Create or update an activity
-      operationId: "putActivity"
-      consumes:
-      - "application/json"
-      parameters:
-        - name: 'activity'
-          in: body
-          description: |
-            The activity that will be created or updated
-          required: true
-          schema:
-            $ref: '#/definitions/Activity'
-      responses:
-        204:
-          description: |
-            Successful request.
-        500:
-          description: |
-            Internal server error.
-
 
     delete:
       tags:

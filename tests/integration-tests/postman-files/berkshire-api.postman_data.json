@@ -20,17 +20,15 @@
       }
     },
     "activities": {
-      "get": {
-        "groupId": "12345"
+      "groupId": "f1571359-92dd-4499-a8b0-cb6a27a09758",
+      "activity1": {
+        "activityId": "4593835d-209f-4a97-a5be-e7ecb3b8e1fe",
+        "name": "Jonas' Bar Mitzvah",
+        "startDateTime": "2017-03-21 13:00",
+        "endDateTime": "2017-03-21 15:00"
       },
-      "post": {
-        "groupId": "12345",
-        "payload" : {
-          "name": "Holly's birthday 2018",
-          "startDateTime": "2017-08-02T02:17:43Z",
-          "endDateTime": "2017-08-02T02:17:43Z"
-        }
-      }
+      "activityId1": "4593835d-209f-4a97-a5be-e7ecb3b8e1fe",
+      "activityId2": "f1571359-92dd-4499-a8b0-cb6a27a09758"
     },
     "group": {
       "groupId": "52987493"
