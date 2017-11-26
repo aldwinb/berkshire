@@ -109,6 +109,7 @@ class ActivitiesHandler(BaseRequestHandler):
             self.set_status(http.HTTPStatus.NOT_FOUND)
             self.finish()
 
+
 class ActivityHandler(BaseRequestHandler):
     """Serves as the request handler for /activity endpoint."""
     def initialize(self, db):
