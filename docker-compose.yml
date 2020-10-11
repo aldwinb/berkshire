@@ -31,7 +31,7 @@ services:
       - berkshire-postgresql-vol-1:/var/lib/postgresql/data
 
   couchdb:
-    image: klaemo/couchdb:latest
+    image: couchdb:latest
     container_name: berkshire-couchdb-1
     environment:
       COUCHDB_USER: admin
