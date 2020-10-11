@@ -1,24 +1,28 @@
 {
 	"info": {
 		"name": "Berkshire API",
-		"_postman_id": "33ea7f09-b9ce-6a2d-ded5-fb991a4e64be",
+		"_postman_id": "ee81cebd-e136-692a-a4f2-d8a5c8d7ea32",
 		"description": "This API is a group planning platform. One of its features is the ability\n for groups to decide via voting.\n",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "Activity",
-			"description": "Folder for groups",
+			"name": "Activities workflow",
 			"item": [
 				{
-					"name": "Get an activity",
+					"name": "Create a group",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"type": "text/javascript",
 								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;"
+									"const group = JSON.parse(pm.request.body.raw);",
+									"pm.environment.set('group', group);",
+									"",
+									"pm.test('should create a group', function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
 								]
 							}
 						},
@@ -27,58 +31,9 @@
 							"script": {
 								"type": "text/javascript",
 								"exec": [
-									"postman.clearEnvironmentVariable(\"groupId\");",
-									"postman.setEnvironmentVariable(\"groupId\", data.activity.get.groupId);",
-									"",
-									"postman.clearEnvironmentVariable(\"activityId\");",
-									"postman.setEnvironmentVariable(\"activityId\", data.activity.get.activityId);"
-								]
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"body": {},
-						"url": {
-							"raw": "http://{{host}}/group/{{groupId}}/activity/{{activityId}}",
-							"protocol": "http",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"group",
-								"{{groupId}}",
-								"activity",
-								"{{activityId}}"
-							]
-						},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "Create or update an activity\n",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"tests[\"Status code is 201\"] = responseCode.code === 201;"
-								]
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"postman.clearEnvironmentVariable(\"groupId\");",
-									"postman.setEnvironmentVariable(\"groupId\", data.activity.put.groupId);",
-									"",
-									"postman.clearEnvironmentVariable(\"activityId\");",
-									"postman.setEnvironmentVariable(\"activityId\", data.activity.put.activityId);"
+									"pm.environment.unset('groupId');",
+									"pm.environment.set('groupId', data.activities.groupId);",
+									""
 								]
 							}
 						}
@@ -93,78 +48,22 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{{data.activity.put.payload}}"
+							"raw": "{\n\t\"name\": \"jeffersons\",\n\t\"activities\": []\n}"
 						},
 						"url": {
-							"raw": "http://{{host}}/group/{{groupId}}/activity/{{activityId}}",
+							"raw": "http://{{host}}/group/{{groupId}}",
 							"protocol": "http",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
 								"group",
-								"{{groupId}}",
-								"activity",
-								"{{activityId}}"
+								"{{groupId}}"
 							]
-						},
-						"description": ""
+						}
 					},
 					"response": []
 				},
-				{
-					"name": "Delete an activity\n",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"tests[\"Status code is 204\"] = responseCode.code === 204;"
-								]
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"postman.clearEnvironmentVariable(\"groupId\");",
-									"postman.setEnvironmentVariable(\"groupId\", data.activity.delete.groupId);",
-									"",
-									"postman.clearEnvironmentVariable(\"activityId\");",
-									"postman.setEnvironmentVariable(\"activityId\", data.activity.delete.activityId);"
-								]
-							}
-						}
-					],
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"body": {},
-						"url": {
-							"raw": "http://{{host}}/group/{{groupId}}/activity/{{activityId}}",
-							"protocol": "http",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"group",
-								"{{groupId}}",
-								"activity",
-								"{{activityId}}"
-							]
-						},
-						"description": ""
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Activities",
-			"description": "",
-			"item": [
 				{
 					"name": "Get activities",
 					"event": [
@@ -173,17 +72,13 @@
 							"script": {
 								"type": "text/javascript",
 								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;"
-								]
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"postman.clearEnvironmentVariable(\"groupId\");",
-									"postman.setEnvironmentVariable(\"groupId\", data.activities.get.groupId);"
+									"const activities = {'activities': []};",
+									"",
+									"//test if object was created",
+									"pm.test('should get an empty activity list', function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(pm.response.json()).to.eql(activities);",
+									"});"
 								]
 							}
 						}
@@ -203,8 +98,7 @@
 								"{{groupId}}",
 								"activities"
 							]
-						},
-						"description": ""
+						}
 					},
 					"response": []
 				},
@@ -216,7 +110,12 @@
 							"script": {
 								"type": "text/javascript",
 								"exec": [
-									"tests[\"Status code is 201\"] = responseCode.code === 201;"
+									"const activity1 = JSON.parse(pm.request.body.raw);",
+									"pm.environment.set('activity1', activity1);",
+									"",
+									"pm.test('should create an activity', function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
 								]
 							}
 						},
@@ -225,8 +124,7 @@
 							"script": {
 								"type": "text/javascript",
 								"exec": [
-									"postman.clearEnvironmentVariable(\"groupId\");",
-									"postman.setEnvironmentVariable(\"groupId\", data.activities.post.groupId);",
+									"postman.setEnvironmentVariable(\"activityId1\", data.activities.activityId1);",
 									""
 								]
 							}
@@ -240,6 +138,48 @@
 								"value": "application/json"
 							}
 						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"activityId\": \"{{activityId1}}\",\n\t\"name\": \"Jonas' Bar Mitzvah\",\n\t\"startDateTime\": \"2017-03-21 13:00\",\n\t\"endDateTime\": \"2017-03-21 15:00\"\n}"
+						},
+						"url": {
+							"raw": "http://{{host}}/group/{{groupId}}/activities",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"group",
+								"{{groupId}}",
+								"activities"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get activities",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"const activities = {'activities': [pm.environment.get('activity1')]}",
+									"pm.environment.set('activities', activities);",
+									"",
+									"//test if object was created",
+									"pm.test('should get activities with newly created activity', function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(pm.response.json()).to.eql(activities);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
 						"body": {},
 						"url": {
 							"raw": "http://{{host}}/group/{{groupId}}/activities",
@@ -252,8 +192,7 @@
 								"{{groupId}}",
 								"activities"
 							]
-						},
-						"description": ""
+						}
 					},
 					"response": []
 				}
@@ -261,7 +200,6 @@
 		},
 		{
 			"name": "Group",
-			"description": "",
 			"item": [
 				{
 					"name": "Create a group",
@@ -315,8 +253,7 @@
 								"group",
 								"{{groupId}}"
 							]
-						},
-						"description": ""
+						}
 					},
 					"response": []
 				},
@@ -342,7 +279,10 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "http://{{host}}/group/{{groupId}}",
 							"protocol": "http",
@@ -353,8 +293,7 @@
 								"group",
 								"{{groupId}}"
 							]
-						},
-						"description": ""
+						}
 					},
 					"response": []
 				},
@@ -394,8 +333,7 @@
 								"group",
 								"{{groupId}}"
 							]
-						},
-						"description": ""
+						}
 					},
 					"response": []
 				},
@@ -421,7 +359,10 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "http://{{host}}/group/{{groupId}}",
 							"protocol": "http",
@@ -432,8 +373,7 @@
 								"group",
 								"{{groupId}}"
 							]
-						},
-						"description": ""
+						}
 					},
 					"response": []
 				},
@@ -456,7 +396,10 @@
 					"request": {
 						"method": "DELETE",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "http://{{host}}/group/{{groupId}}",
 							"protocol": "http",
@@ -467,8 +410,7 @@
 								"group",
 								"{{groupId}}"
 							]
-						},
-						"description": ""
+						}
 					},
 					"response": []
 				},
@@ -490,7 +432,10 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "http://{{host}}/group/{{groupId}}",
 							"protocol": "http",
@@ -501,8 +446,7 @@
 								"group",
 								"{{groupId}}"
 							]
-						},
-						"description": ""
+						}
 					},
 					"response": []
 				}

@@ -79,23 +79,35 @@ class ActivitiesHandler(BaseRequestHandler):
 
     def get(self, group_id):
         """Gets the list """
-        self.set_status(http.HTTPStatus.OK)
-        self.finish()
+
+        group = self.__db.get(id=group_id)
+        if group:
+            self.set_status(http.HTTPStatus.OK)
+            self.write({'activities': group['activities']})
+        else:
+            self.set_status(http.HTTPStatus.NOT_FOUND)
+            self.finish()
 
     def post(self, group_id):
         """Handles the POST method of the /activities endpoint.
 
         Creates a new activity object."""
-        # payload = json.loads(self.request.body.decode('utf-8'))
+        payload = json.loads(self.request.body.decode('utf-8'))
         # activity_id = payload.get('activity_id')
         # if not activity_id:
         #     self.set_status(http.HTTPStatus.INTERNAL_SERVER_ERROR)
         #     self.write({'error': 'Missing activity ID'})
         #
-        # self.__db.upsert(id=payload['activity_id'], obj=payload)
-        self.set_status(http.HTTPStatus.CREATED)
-        # self.write({'message': 'Success'})
-        self.finish()
+
+        group = self.__db.get(id=group_id)
+        if group:
+            group['activities'].append(payload)
+            self.__db.upsert(id=group_id, obj=group)
+            self.set_status(http.HTTPStatus.CREATED)
+            self.finish()
+        else:
+            self.set_status(http.HTTPStatus.NOT_FOUND)
+            self.finish()
 
 
 class ActivityHandler(BaseRequestHandler):
